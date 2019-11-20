@@ -1,27 +1,23 @@
 #pragma once
 #include <SFML\Graphics.hpp>
 
-constexpr auto menu_items = 4;
+const auto menu_items = 4;
 
-class Menu
+class Menu : public sf::Drawable
 {
+private:
+	virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 
-	private:
+	int selectedindex;
+	sf::Font font;
+	sf::Text menu[menu_items];
+	sf::Texture background;
+	sf::Sprite  sprite_background;
 
-		int selectedindex;
-		sf::Font font;
-		sf::Text menu[menu_items];
-		sf::Texture background;
-		sf::Sprite  sprite_background;
+public:
+	Menu(size_t width, size_t height);
 
-	public:
-
-		Menu(float width, float height);
-		~Menu();
-
-		void DrawMenu(sf::RenderWindow &window);
-		void DrawBackground(sf::RenderWindow &window);
-		void MoveUp();
-		void MoveDown();
-		int  Get_Pressed_Index();
+	void MoveUp();
+	void MoveDown();
+	int  Get_Pressed_Index();
 };

@@ -1,12 +1,20 @@
 #include "Menu.h"
 
-Menu::Menu(float width, float height)
+void Menu::draw(sf::RenderTarget&target, sf::RenderStates states) const
 {
-	if (!font.loadFromFile("OCRAEXT.ttf"))
+	target.draw(sprite_background);
+	for (int i = 0; i < menu_items; ++i)
 	{
-		EXIT_FAILURE;
+		target.draw(menu[i]);
+	}	
+}
+
+Menu::Menu(size_t width, size_t height)
+{
+	if (!font.loadFromFile("Font\\OCRAEXT.ttf"))
+	{
+		exit(EXIT_FAILURE);
 	}
-	//Error while load the font
 	
 	menu[0].setFont(font);
 	menu[0].setFillColor(sf::Color::Red);
@@ -30,38 +38,15 @@ Menu::Menu(float width, float height)
 
 	selectedindex = 0;
 
-
-	if (!background.loadFromFile("background1.jpg"))
+	if (!background.loadFromFile("Images\\background1.jpg"))
 	{
-		EXIT_FAILURE;
+		exit(EXIT_FAILURE);
 	}
-	//Error while load the background
 
 	sprite_background.setTexture(background);
 	sprite_background.setScale(1, 1);
-	sprite_background.setPosition(sf::Vector2f(width / 640, height / 400));
-
-	
+	sprite_background.setPosition(sf::Vector2f(width / 640, height / 400));	
 }
-//Constructor
-
-Menu::~Menu() {}
-//Destructor
-
-void Menu::DrawMenu(sf::RenderWindow &window)
-{
-	for (int i = 0; i < menu_items; ++i)
-	{
-		window.draw(menu[i]);
-	}
-}
-//Draw the menu
-
-void Menu::DrawBackground(sf::RenderWindow &window)
-{
-	window.draw(sprite_background);
-}
-//Draw the background
 
 void Menu::MoveUp()
 {
@@ -72,7 +57,6 @@ void Menu::MoveUp()
 		menu[selectedindex].setFillColor(sf::Color::Red);
 	}
 }
-//Move up
 
 void Menu::MoveDown()
 {
@@ -83,10 +67,8 @@ void Menu::MoveDown()
 		menu[selectedindex].setFillColor(sf::Color::Red);
 	}
 }
-//Move Down
 
 int Menu::Get_Pressed_Index()
 {
 	return selectedindex;
 }
-//Return the index which pressed
