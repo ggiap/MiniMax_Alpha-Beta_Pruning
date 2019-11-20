@@ -208,7 +208,7 @@ bool Tic_Tac_Toe::Equals3(const std::string &s1, const std::string &s2, const st
 
 void Tic_Tac_Toe::DrawWinningLine(const sf::RectangleShape &r1, const sf::RectangleShape &r2, float angle, bool isVertical, bool isDiagonal)
 {
-
+	winOverlayLine.setRotation(0);
 	// Get boxes' local center point
 	sf::Vector2f boxCenter
 	(
