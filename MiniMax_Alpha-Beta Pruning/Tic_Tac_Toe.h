@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 class Tic_Tac_Toe : public sf::Drawable
 {
@@ -22,12 +23,14 @@ private:
 	void HandleEvents();
 	bool GameCondition();
 	bool Equals3(const std::string&, const std::string&, const std::string&) const;
-	void DrawWinningLine(const sf::RectangleShape&, const sf::RectangleShape&, float, bool, bool);
+	void DrawWinningLine(std::vector<sf::RectangleShape*>&, float, bool, bool);
 
 	sf::RenderWindow *window;
 	std::vector<sf::RectangleShape> boxes{ 9, sf::RectangleShape() };
 	sf::Texture cross;
 	sf::Texture circle;
+	sf::Texture redCross;
+	sf::Texture redCircle;
 	std::vector<sf::RectangleShape> lines{ 4, sf::RectangleShape() };
 	sf::RectangleShape winOverlayLine;
 	sf::Font font;

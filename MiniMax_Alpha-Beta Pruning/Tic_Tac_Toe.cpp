@@ -39,13 +39,15 @@ void Tic_Tac_Toe::ResetBoard()
 	window->clear(sf::Color::White);
 	for (auto &box : boxes)
 		box.setTexture(nullptr);
+
+	winOverlayLine.setFillColor(sf::Color(255, 215, 0));
 }
 
 void Tic_Tac_Toe::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	for (auto box : boxes)
+	for (const auto &box : boxes)
 		target.draw(box);
-	for (auto line : lines)
+	for (const auto &line : lines)
 		target.draw(line);
 }
 
@@ -54,7 +56,7 @@ void Tic_Tac_Toe::CreateBoard()
 	int x = 30;
 	int y = 30;
 	int counter = 0;
-	for (auto& box : boxes)
+	for (auto &box : boxes)
 	{
 		box.setSize(sf::Vector2f(window->getSize().x / 5, window->getSize().y / 5));
 		box.setTexture(nullptr);
@@ -95,7 +97,7 @@ void Tic_Tac_Toe::CreateBoard()
 	lines.at(3).setFillColor(sf::Color::Black);
 
 	winOverlayLine.setSize(sf::Vector2f(0, 10));
-	winOverlayLine.setFillColor(sf::Color::Red);
+	winOverlayLine.setFillColor(sf::Color(255, 215, 0));
 	
 	anyKeyText.setFont(font);
 	anyKeyText.setFillColor(sf::Color(150, 150, 0));
@@ -113,6 +115,14 @@ void Tic_Tac_Toe::LoadResources()
 	{
 		std::cerr << "Load circle texture error!" << '\n';
 	}
+	if (!redCross.loadFromFile("Images\\XR.png"))
+	{
+		std::cerr << "Load cross texture error!" << '\n';
+	}
+	if (!redCircle.loadFromFile("Images\\OR.png"))
+	{
+		std::cerr << "Load circle texture error!" << '\n';
+	}
 	if (!font.loadFromFile("Font\\OCRAEXT.ttf"))
 	{
 		exit(EXIT_FAILURE);
@@ -127,33 +137,35 @@ void Tic_Tac_Toe::HandleEvents()
 	{
 		if (event.type == sf::Event::Closed)
 			window->close();
-
-		if (event.type == sf::Event::MouseButtonPressed)
+		if (!gameOver)
 		{
-			if (event.mouseButton.button == sf::Mouse::Left)
+			if (event.type == sf::Event::MouseButtonPressed)
 			{
-				sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
-				sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
-
-				int counter = 0;
-				for (auto& box : boxes)
+				if (event.mouseButton.button == sf::Mouse::Left)
 				{
-					if (box.getGlobalBounds().contains(mousePosF) && (board.at(counter) == "-"))
-					{
-						if (playerTurn)
-						{
-							board.at(counter) = "X";
-							box.setTexture(&cross);
-						}
-						else
-						{
-							board.at(counter) = "O";
-							box.setTexture(&circle);
-						}
+					sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
+					sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
 
-						playerTurn = !playerTurn;
+					int counter = 0;
+					for (auto& box : boxes)
+					{
+						if (box.getGlobalBounds().contains(mousePosF) && (board.at(counter) == "-"))
+						{
+							if (playerTurn)
+							{
+								board.at(counter) = "X";
+								box.setTexture(&cross);
+							}
+							else
+							{
+								board.at(counter) = "O";
+								box.setTexture(&circle);
+							}
+
+							playerTurn = !playerTurn;
+						}
+						++counter;
 					}
-					++counter;
 				}
 			}
 		}
@@ -164,14 +176,39 @@ void Tic_Tac_Toe::HandleEvents()
 
 bool Tic_Tac_Toe::GameCondition()
 {
+	std::vector<sf::RectangleShape*> winningTrio;
+
+	// Diagonal
+	if (Equals3(board.at(0), board.at(4), board.at(8)))
+	{
+		winningTrio.push_back(&boxes.at(0));
+		winningTrio.push_back(&boxes.at(4));
+		winningTrio.push_back(&boxes.at(8));
+		DrawWinningLine(winningTrio, 45, false, true);
+		
+		return true;
+	}
+	if (Equals3(board.at(2), board.at(4), board.at(6)))
+	{
+		winningTrio.push_back(&boxes.at(2));
+		winningTrio.push_back(&boxes.at(4));
+		winningTrio.push_back(&boxes.at(6));
+		DrawWinningLine(winningTrio, 135, false, true);
+
+		return true;
+	}
+
 	// Horizontal
 	for (int i = 0; i < 3; ++i)
 	{
 		if (Equals3(board.at(i * 3), board.at(i * 3 + 1), board.at(i * 3 + 2)))
 		{
-			DrawWinningLine(boxes.at(i *  3), boxes.at(i * 3 + 2), 0, false, false);
-			gameOver = true;
-			break;
+			winningTrio.push_back(&boxes.at(i * 3));
+			winningTrio.push_back(&boxes.at(i * 3 + 1));
+			winningTrio.push_back(&boxes.at(i * 3 + 2));
+			DrawWinningLine(winningTrio, 0, false, false);
+			
+			return true;
 		}
 	}
 	// Vertical
@@ -179,24 +216,21 @@ bool Tic_Tac_Toe::GameCondition()
 	{
 		if (Equals3(board.at(j), board.at(j + 3), board.at(j + 6)))
 		{
-			DrawWinningLine(boxes.at(j), boxes.at(j + 6), 90, true, false);
-			gameOver = true;
-			break;
-		}
-	}
-	// Diagonal
-	if (Equals3(board.at(0), board.at(4), board.at(8)))
-	{
-		DrawWinningLine(boxes.at(0), boxes.at(8), 45, false, true);
-		gameOver = true;
-	}
-	if (Equals3(board.at(2), board.at(4), board.at(6)))
-	{
-		DrawWinningLine(boxes.at(2), boxes.at(6), 135, false, true);
-		gameOver = true;
-	}
+			winningTrio.push_back(&boxes.at(j));
+			winningTrio.push_back(&boxes.at(j + 3));
+			winningTrio.push_back(&boxes.at(j + 6));
+			DrawWinningLine(winningTrio, 90, true, false);
 
-	return gameOver;
+			return true;
+		}
+	}	
+
+	if (std::find(board.begin(), board.end(), "-") == board.end())
+	{
+		winOverlayLine.setFillColor(sf::Color(255, 215, 0,0));
+
+		return true;
+	}
 }
 
 bool Tic_Tac_Toe::Equals3(const std::string &s1, const std::string &s2, const std::string &s3) const
@@ -206,17 +240,23 @@ bool Tic_Tac_Toe::Equals3(const std::string &s1, const std::string &s2, const st
 	return false;
 }
 
-void Tic_Tac_Toe::DrawWinningLine(const sf::RectangleShape &r1, const sf::RectangleShape &r2, float angle, bool isVertical, bool isDiagonal)
+void Tic_Tac_Toe::DrawWinningLine(std::vector<sf::RectangleShape*> &winningTrio, float angle, bool isVertical, bool isDiagonal)
 {
+	for(auto &box : winningTrio)
+	if (playerTurn)
+		box->setTexture(&redCircle);
+	else
+		box->setTexture(&redCross);
+
 	winOverlayLine.setRotation(0);
 	// Get boxes' local center point
 	sf::Vector2f boxCenter
 	(
-		(r1.getLocalBounds().left + r1.getLocalBounds().width) / 2.0f,
-		(r1.getLocalBounds().top + r1.getLocalBounds().height) / 2.0f
+		(winningTrio.at(0)->getLocalBounds().left + winningTrio.at(0)->getLocalBounds().width) / 2.0f,
+		(winningTrio.at(0)->getLocalBounds().top + winningTrio.at(0)->getLocalBounds().height) / 2.0f
 	);
 	// Convert local coords to global
-	auto global = r1.getTransform().transformPoint(boxCenter);
+	auto global = winningTrio.at(0)->getTransform().transformPoint(boxCenter);
 
 	winOverlayLine.setPosition
 	(
@@ -232,7 +272,7 @@ void Tic_Tac_Toe::DrawWinningLine(const sf::RectangleShape &r1, const sf::Rectan
 		(
 			sf::Vector2f
 			(
-				r2.getGlobalBounds().left - r1.getGlobalBounds().left,
+				winningTrio.at(2)->getGlobalBounds().left - winningTrio.at(0)->getGlobalBounds().left,
 				winOverlayLine.getSize().y
 			)
 		);
@@ -243,7 +283,7 @@ void Tic_Tac_Toe::DrawWinningLine(const sf::RectangleShape &r1, const sf::Rectan
 		(
 			sf::Vector2f
 			(
-				r2.getGlobalBounds().top - r1.getGlobalBounds().top,
+				winningTrio.at(2)->getGlobalBounds().top - winningTrio.at(0)->getGlobalBounds().top,
 				winOverlayLine.getSize().y
 			)
 		);
@@ -256,7 +296,7 @@ void Tic_Tac_Toe::DrawWinningLine(const sf::RectangleShape &r1, const sf::Rectan
 		(
 			sf::Vector2f
 			(
-				r2.getGlobalBounds().top - r1.getGlobalBounds().top + 180,
+				winningTrio.at(2)->getGlobalBounds().top - winningTrio.at(0)->getGlobalBounds().top + 180,
 				winOverlayLine.getSize().y
 			)
 		);
