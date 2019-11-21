@@ -1,6 +1,7 @@
 #include "Tic_Tac_Toe.h"
 
 
+
 void Tic_Tac_Toe::StartGame()
 {
 	while (!gameOver)
@@ -32,7 +33,6 @@ void Tic_Tac_Toe::ResetBoard()
 	{
 		s = "-";
 	}
-	playerTurn = false;
 	gameOver = false;
 	anyKeyPressed = false;
 
@@ -184,7 +184,7 @@ bool Tic_Tac_Toe::GameCondition()
 		winningTrio.push_back(&boxes.at(0));
 		winningTrio.push_back(&boxes.at(4));
 		winningTrio.push_back(&boxes.at(8));
-		DrawWinningLine(winningTrio, 45, false, true);
+		DrawWinningTrio(winningTrio);
 		
 		return true;
 	}
@@ -193,7 +193,7 @@ bool Tic_Tac_Toe::GameCondition()
 		winningTrio.push_back(&boxes.at(2));
 		winningTrio.push_back(&boxes.at(4));
 		winningTrio.push_back(&boxes.at(6));
-		DrawWinningLine(winningTrio, 135, false, true);
+		DrawWinningTrio(winningTrio);
 
 		return true;
 	}
@@ -206,7 +206,7 @@ bool Tic_Tac_Toe::GameCondition()
 			winningTrio.push_back(&boxes.at(i * 3));
 			winningTrio.push_back(&boxes.at(i * 3 + 1));
 			winningTrio.push_back(&boxes.at(i * 3 + 2));
-			DrawWinningLine(winningTrio, 0, false, false);
+			DrawWinningTrio(winningTrio);
 			
 			return true;
 		}
@@ -219,7 +219,7 @@ bool Tic_Tac_Toe::GameCondition()
 			winningTrio.push_back(&boxes.at(j));
 			winningTrio.push_back(&boxes.at(j + 3));
 			winningTrio.push_back(&boxes.at(j + 6));
-			DrawWinningLine(winningTrio, 90, true, false);
+			DrawWinningTrio(winningTrio);
 
 			return true;
 		}
@@ -240,67 +240,11 @@ bool Tic_Tac_Toe::Equals3(const std::string &s1, const std::string &s2, const st
 	return false;
 }
 
-void Tic_Tac_Toe::DrawWinningLine(std::vector<sf::RectangleShape*> &winningTrio, float angle, bool isVertical, bool isDiagonal)
+void Tic_Tac_Toe::DrawWinningTrio(std::vector<sf::RectangleShape*> &winningTrio)
 {
 	for(auto &box : winningTrio)
 	if (playerTurn)
 		box->setTexture(&redCircle);
 	else
 		box->setTexture(&redCross);
-
-	winOverlayLine.setRotation(0);
-	// Get boxes' local center point
-	sf::Vector2f boxCenter
-	(
-		(winningTrio.at(0)->getLocalBounds().left + winningTrio.at(0)->getLocalBounds().width) / 2.0f,
-		(winningTrio.at(0)->getLocalBounds().top + winningTrio.at(0)->getLocalBounds().height) / 2.0f
-	);
-	// Convert local coords to global
-	auto global = winningTrio.at(0)->getTransform().transformPoint(boxCenter);
-
-	winOverlayLine.setPosition
-	(
-		sf::Vector2f
-		(
-			global.x, global.y
-		)
-	);
-
-	if (!isVertical && !isDiagonal)
-	{
-		winOverlayLine.setSize
-		(
-			sf::Vector2f
-			(
-				winningTrio.at(2)->getGlobalBounds().left - winningTrio.at(0)->getGlobalBounds().left,
-				winOverlayLine.getSize().y
-			)
-		);
-	}
-	else if(isVertical)
-	{
-		winOverlayLine.setSize
-		(
-			sf::Vector2f
-			(
-				winningTrio.at(2)->getGlobalBounds().top - winningTrio.at(0)->getGlobalBounds().top,
-				winOverlayLine.getSize().y
-			)
-		);
-
-		winOverlayLine.rotate(angle);
-	}
-	else
-	{
-		winOverlayLine.setSize
-		(
-			sf::Vector2f
-			(
-				winningTrio.at(2)->getGlobalBounds().top - winningTrio.at(0)->getGlobalBounds().top + 180,
-				winOverlayLine.getSize().y
-			)
-		);
-
-		winOverlayLine.rotate(angle);
-	}
 }

@@ -11,7 +11,7 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(600, 600), "MiniMax_Alpha-Beta Pruning");
 
 	Menu menu(window.getSize().x,window.getSize().y);
-	Tic_Tac_Toe game(window);
+	Tic_Tac_Toe game(window, true);
 
 	sf::Event event;
 

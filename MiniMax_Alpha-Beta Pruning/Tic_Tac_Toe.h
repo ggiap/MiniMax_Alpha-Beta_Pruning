@@ -23,7 +23,7 @@ private:
 	void HandleEvents();
 	bool GameCondition();
 	bool Equals3(const std::string&, const std::string&, const std::string&) const;
-	void DrawWinningLine(std::vector<sf::RectangleShape*>&, float, bool, bool);
+	void DrawWinningTrio(std::vector<sf::RectangleShape*>&);
 
 	sf::RenderWindow *window;
 	std::vector<sf::RectangleShape> boxes{ 9, sf::RectangleShape() };
