@@ -10,8 +10,8 @@ int main()
 {
 	sf::RenderWindow window(sf::VideoMode(600, 600), "MiniMax_Alpha-Beta Pruning");
 
-	Menu menu(window.getSize().x,window.getSize().y);
-	Tic_Tac_Toe game(window, true);
+	Menu menu(window.getSize().x, window.getSize().y);
+	Tic_Tac_Toe game(window);
 
 	sf::Event event;
 
@@ -38,18 +38,19 @@ int main()
 					{
 					case 0:
 						//std::cout << "One Player" << std::endl;
-						
+						game.StartGame(true);
+						game.ResetBoard();
 						break;
 
 					case 1:
 						//std::cout << "Two Player" << std::endl;
-						game.StartGame();
+						game.StartGame(false);
 						game.ResetBoard();
 						break;
 
 					case 2:
 						//std::cout << "Options" << std::endl;
-						
+
 						break;
 
 					case 3:
