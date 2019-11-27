@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <memory>
+#include <limits>
 
 #include "Button.h"
 
@@ -28,6 +28,7 @@ private:
 	bool Equals3(const std::string&, const std::string&, const std::string&) const;
 	void DrawWinningTrio(std::vector<Button*>&);
 	int  Evaluate();
+	int  Alpha_Beta(int, bool, int, int);
 	int  MiniMax(int, bool);
 	int  FindBestMove();
 

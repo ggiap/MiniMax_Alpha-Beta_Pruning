@@ -370,6 +370,72 @@ int Tic_Tac_Toe::Evaluate()
 	return 0;
 }
 
+int Tic_Tac_Toe::Alpha_Beta(int depth, bool isMaximize, int a, int b)
+{
+	int score = Evaluate();
+
+	if (score == 10)
+		return score;
+
+	if (score == -10)
+		return score;
+
+	if (depth == 0)
+		return score;
+
+	if (std::find(board.begin(), board.end(), "-") == board.end())
+		return score;
+
+	if (isMaximize)
+	{
+		int best = std::numeric_limits<int>::min();
+		for (auto& s : board)
+		{
+			if (s == "-")
+			{
+				s = "X";
+
+				playerTurn = !playerTurn;
+
+				best = std::max(best, Alpha_Beta(depth - 1, false, a, b));
+				a = max(a, best);
+
+				playerTurn = !playerTurn;
+
+				s = "-";
+
+				if (a >= b)
+					break;
+			}
+		}
+		return best;
+	}
+	else
+	{
+		int best = std::numeric_limits<int>::max();
+		for (auto& s : board)
+		{
+			if (s == "-")
+			{
+				s = "O";
+
+				playerTurn = !playerTurn;
+
+				best = std::min(best, Alpha_Beta(depth - 1, true, a, b));
+				b = min(b, best);
+
+				playerTurn = !playerTurn;
+
+				s = "-";
+
+				if (a >= b)
+					break;
+			}
+		}
+		return best;
+	}
+}
+
 int Tic_Tac_Toe::MiniMax(int depth, bool isMaximize)
 {
 	int score = Evaluate();
@@ -422,7 +488,7 @@ int Tic_Tac_Toe::MiniMax(int depth, bool isMaximize)
 
 int Tic_Tac_Toe::FindBestMove()
 {
-	int bestValue = INT32_MIN;
+	int bestValue = std::numeric_limits<int>::min();
 	int pos = -1;
 	int counter = 0;
 
@@ -431,9 +497,15 @@ int Tic_Tac_Toe::FindBestMove()
 		if (s == "-")
 		{
 			s = "X";
+
 			playerTurn = !playerTurn;
-			int moveValue = MiniMax(2, false);
+
+			//int moveValue = MiniMax(15, false);
+			int moveValue = Alpha_Beta(15, false,
+				std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+
 			playerTurn = !playerTurn;
+
 			s = "-";
 
 			if (moveValue > bestValue)
