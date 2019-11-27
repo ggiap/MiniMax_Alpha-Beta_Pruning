@@ -6,7 +6,7 @@ const auto menu_items = 4;
 class Menu : public sf::Drawable
 {
 private:
-	virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
+	virtual void draw(sf::RenderTarget &, sf::RenderStates) const;
 
 	int selectedindex;
 	sf::Font font;

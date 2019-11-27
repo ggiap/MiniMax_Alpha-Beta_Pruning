@@ -3,6 +3,9 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <memory>
+
+#include "Button.h"
 
 class Tic_Tac_Toe : public sf::Drawable
 {
@@ -23,13 +26,13 @@ private:
 	void HandleEvents();
 	bool GameCondition();
 	bool Equals3(const std::string&, const std::string&, const std::string&) const;
-	void DrawWinningTrio(std::vector<sf::RectangleShape*>&);
+	void DrawWinningTrio(std::vector<Button*>&);
 	int  Evaluate();
 	int  MiniMax(int, bool);
 	int  FindBestMove();
 
 	sf::RenderWindow* window;
-	std::vector<sf::RectangleShape> boxes{ 9, sf::RectangleShape() };
+	std::vector<Button> boxes{ 9, Button() };
 	sf::Texture cross;
 	sf::Texture circle;
 	sf::Texture redCross;

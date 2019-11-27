@@ -14,7 +14,8 @@ void Tic_Tac_Toe::StartGame(bool mode)
 			{
 				int pos = FindBestMove();
 				board.at(pos) = "X";
-				boxes.at(pos).setTexture(&cross);
+				boxes.at(pos).getRect().setTexture(&cross);
+				boxes.at(pos).isPressed = true;
 
 				playerTurn = !playerTurn;
 				playerClicked = false;
@@ -51,7 +52,11 @@ void Tic_Tac_Toe::ResetBoard()
 
 	window->clear(sf::Color::White);
 	for (auto& box : boxes)
-		box.setTexture(nullptr);
+	{
+		box.getRect().setTexture(nullptr);
+		box.getRect().setFillColor(sf::RectangleShape().getFillColor());
+		box.isPressed = false;
+	}
 
 	playerTurn = false;
 	onePlayerMode = false;
@@ -61,7 +66,7 @@ void Tic_Tac_Toe::ResetBoard()
 void Tic_Tac_Toe::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	for (const auto& box : boxes)
-		target.draw(box);
+		target.draw(box.getRect());
 	for (const auto& line : lines)
 		target.draw(line);
 }
@@ -71,12 +76,12 @@ void Tic_Tac_Toe::CreateBoard()
 	int x = 30;
 	int y = 30;
 	int counter = 0;
-	for (auto& box : boxes)
+	for (auto &box : boxes)
 	{
-		box.setSize(sf::Vector2f(window->getSize().x / 5, window->getSize().y / 5));
+		box.getRect().setSize(sf::Vector2f(window->getSize().x / 5, window->getSize().y / 5));
 		
-		box.setOutlineThickness(0);
-		box.setPosition(sf::Vector2f(x, y));
+		box.getRect().setOutlineThickness(0);
+		box.getRect().setPosition(sf::Vector2f(x, y));
 
 		if (counter < 2)
 		{
@@ -92,14 +97,14 @@ void Tic_Tac_Toe::CreateBoard()
 	}
 
 	counter = 0;
-	for (auto& s : board)
+	for (auto &s : board)
 	{
 		if (s == "-")
-			boxes.at(counter).setTexture(nullptr);
+			boxes.at(counter).getRect().setTexture(nullptr);
 		else if (s == "X")
-			boxes.at(counter).setTexture(&cross);
+			boxes.at(counter).getRect().setTexture(&cross);
 		else
-			boxes.at(counter).setTexture(&circle);
+			boxes.at(counter).getRect().setTexture(&circle);
 
 		++counter;
 	}
@@ -128,8 +133,6 @@ void Tic_Tac_Toe::CreateBoard()
 	anyKeyText.setFillColor(sf::Color(150, 150, 0));
 	anyKeyText.setString("Press any	key to    continue..");
 	anyKeyText.setPosition(sf::Vector2f(1, 550));
-
-
 }
 
 void Tic_Tac_Toe::LoadResources()
@@ -177,12 +180,13 @@ void Tic_Tac_Toe::HandleEvents()
 					int counter = 0;
 					for (auto& box : boxes)
 					{
-						if (box.getGlobalBounds().contains(mousePosF) && (board.at(counter) == "-"))
-						{
+						if (box.getRect().getGlobalBounds().contains(mousePosF) && (board.at(counter) == "-"))
+						{			
+							box.isPressed = true;
 							if (onePlayerMode)
 							{
 								board.at(counter) = "O";
-								box.setTexture(&circle);
+								box.getRect().setTexture(&circle);
 
 								playerClicked = true;
 								playerTurn = !playerTurn;
@@ -195,12 +199,12 @@ void Tic_Tac_Toe::HandleEvents()
 								if (playerTurn)
 								{
 									board.at(counter) = "X";
-									box.setTexture(&cross);
+									box.getRect().setTexture(&cross);
 								}
 								else
 								{
 									board.at(counter) = "O";
-									box.setTexture(&circle);
+									box.getRect().setTexture(&circle);
 								}
 
 								playerTurn = !playerTurn;
@@ -208,6 +212,25 @@ void Tic_Tac_Toe::HandleEvents()
 							}
 						}
 						++counter;
+					}
+				}
+			}
+
+			if (event.type == sf::Event::MouseMoved)
+			{
+				sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
+				sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+
+				for (auto& box : boxes)
+				{
+					if (box.getRect().getGlobalBounds().contains(mousePosF) && !box.isPressed)
+					{
+						box.getRect().setFillColor(sf::Color(25, 100, 150, 255));
+						break;
+					}
+					else
+					{
+						box.getRect().setFillColor(sf::RectangleShape().getFillColor());
 					}
 				}
 			}
@@ -220,7 +243,7 @@ void Tic_Tac_Toe::HandleEvents()
 
 bool Tic_Tac_Toe::GameCondition()
 {
-	std::vector<sf::RectangleShape*> winningTrio;
+	std::vector<Button*> winningTrio;
 
 	// Diagonal
 	if (Equals3(board.at(0), board.at(4), board.at(8)))
@@ -255,6 +278,7 @@ bool Tic_Tac_Toe::GameCondition()
 			return true;
 		}
 	}
+
 	// Vertical
 	for (int j = 0; j < 3; ++j)
 	{
@@ -280,23 +304,24 @@ bool Tic_Tac_Toe::Equals3(const std::string& s1, const std::string& s2, const st
 	return false;
 }
 
-void Tic_Tac_Toe::DrawWinningTrio(std::vector<sf::RectangleShape*>& winningTrio)
+void Tic_Tac_Toe::DrawWinningTrio(std::vector<Button*>& winningTrio)
 {
 	for (auto& box : winningTrio)
 	{
+		box->getRect().setFillColor(sf::RectangleShape().getFillColor());
 		if (onePlayerMode)
 		{
 			if (!playerTurn)
-				box->setTexture(&redCircle);
+				box->getRect().setTexture(&redCircle);
 			else
-				box->setTexture(&redCross);
+				box->getRect().setTexture(&redCross);
 		}
 		else
 		{
 			if (playerTurn)
-				box->setTexture(&redCircle);
+				box->getRect().setTexture(&redCircle);
 			else
-				box->setTexture(&redCross);
+				box->getRect().setTexture(&redCross);
 		}
 	}
 }
