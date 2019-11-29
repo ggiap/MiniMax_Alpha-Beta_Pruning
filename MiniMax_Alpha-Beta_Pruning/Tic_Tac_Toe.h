@@ -17,7 +17,7 @@ public:
 		CreateBoard();
 	}
 
-	void StartGame(bool);
+	void StartGame(bool, bool);
 	void ResetBoard();
 private:
 	virtual void draw(sf::RenderTarget&, sf::RenderStates) const;
@@ -47,10 +47,13 @@ private:
 		"-", "-", "-",
 		"-", "-", "-"
 	};
+	const std::string playerSymbol = "X";
+	const std::string opponentSymbol = "O";
 	bool playerTurn = false;
 	bool gameOver = false;
 	bool anyKeyPressed = false;
 	bool onePlayerMode = false;
 	bool playerClicked = false;
+	bool algChoice = false;
 };
 

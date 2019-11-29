@@ -9,6 +9,45 @@ void Menu::draw(sf::RenderTarget&target, sf::RenderStates states) const
 	}	
 }
 
+void Menu::HandleEvents(sf::RenderWindow& window)
+{
+	sf::Event event;
+
+	while (window.pollEvent(event))
+	{
+		if (event.type == sf::Event::MouseButtonPressed)
+		{
+			if (event.mouseButton.button == sf::Mouse::Left)
+			{
+				sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+				sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+
+				if (mmButton.getRect().getGlobalBounds().contains(mousePosF))
+				{
+					abButton.isPressed = false;
+					mmButton.isPressed = true;
+
+					mmButton.getRect().setFillColor(sf::Color::Blue);
+					abButton.getRect().setFillColor(sf::Color::Cyan);
+				}
+				if (abButton.getRect().getGlobalBounds().contains(mousePosF))
+				{
+					abButton.isPressed = true;
+					mmButton.isPressed = false;
+
+					abButton.getRect().setFillColor(sf::Color::Blue);
+					mmButton.getRect().setFillColor(sf::Color::Cyan);
+				}
+				if (backButton.getRect().getGlobalBounds().contains(mousePosF))
+					backButton.isPressed = true;				
+			}
+		}
+
+		if (event.type == sf::Event::Closed)
+			window.close();
+	}
+}
+
 Menu::Menu(size_t width, size_t height)
 {
 	if (!font.loadFromFile("Font\\OCRAEXT.ttf"))
@@ -46,6 +85,12 @@ Menu::Menu(size_t width, size_t height)
 	sprite_background.setTexture(background);
 	sprite_background.setScale(1, 1);
 	sprite_background.setPosition(sf::Vector2f(width / 640, height / 400));	
+
+	mmButton.buttonConfig(sf::Vector2f(150, 50), sf::Vector2f(200, 200), sf::Color::Cyan, "MiniMax");
+	abButton.buttonConfig(sf::Vector2f(150, 50), sf::Vector2f(400, 200), sf::Color::Blue, "Alpha-Beta");
+	backButton.buttonConfig(sf::Vector2f(150, 50), sf::Vector2f(450, 550), sf::Color::Cyan, "Back");
+	
+	algChoice = false;
 }
 
 void Menu::MoveUp()
@@ -71,4 +116,25 @@ void Menu::MoveDown()
 int Menu::Get_Pressed_Index()
 {
 	return selectedindex;
+}
+
+void Menu::chooseAlgo(sf::RenderWindow &window)
+{
+	while (!backButton.isPressed)
+	{
+		HandleEvents(window);
+
+		if (mmButton.isPressed)
+			algChoice = true;
+		else if (abButton.isPressed)
+			algChoice = false;
+
+		window.clear(sf::Color::White);
+		mmButton.draw(window);
+		abButton.draw(window);
+		backButton.draw(window);
+		window.display();
+	}
+
+	backButton.isPressed = false;
 }

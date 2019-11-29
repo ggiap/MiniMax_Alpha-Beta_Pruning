@@ -1,10 +1,11 @@
 #include "Tic_Tac_Toe.h"
 
 
-void Tic_Tac_Toe::StartGame(bool mode)
+void Tic_Tac_Toe::StartGame(bool mode, bool algorithmChoice)
 {
-	playerClicked = true;
+	playerTurn = true;
 	onePlayerMode = mode;
+	algChoice = algorithmChoice;
 
 	while (!gameOver)
 	{
@@ -13,8 +14,16 @@ void Tic_Tac_Toe::StartGame(bool mode)
 			if (!gameOver && playerClicked)
 			{
 				int pos = FindBestMove();
-				board.at(pos) = "X";
-				boxes.at(pos).getRect().setTexture(&cross);
+				if (playerTurn)
+				{
+					board.at(pos) = playerSymbol;
+					boxes.at(pos).getRect().setTexture(&cross);
+				}
+				else
+				{
+					board.at(pos) = opponentSymbol;
+					boxes.at(pos).getRect().setTexture(&circle);
+				}
 				boxes.at(pos).isPressed = true;
 
 				playerTurn = !playerTurn;
@@ -58,9 +67,9 @@ void Tic_Tac_Toe::ResetBoard()
 		box.isPressed = false;
 	}
 
-	playerTurn = false;
+	//playerTurn = false;
 	onePlayerMode = false;
-	playerClicked = false;
+	 playerClicked = false;
 }
 
 void Tic_Tac_Toe::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -101,7 +110,7 @@ void Tic_Tac_Toe::CreateBoard()
 	{
 		if (s == "-")
 			boxes.at(counter).getRect().setTexture(nullptr);
-		else if (s == "X")
+		else if (s == playerSymbol)
 			boxes.at(counter).getRect().setTexture(&cross);
 		else
 			boxes.at(counter).getRect().setTexture(&circle);
@@ -185,11 +194,19 @@ void Tic_Tac_Toe::HandleEvents()
 							box.isPressed = true;
 							if (onePlayerMode)
 							{
-								board.at(counter) = "O";
-								box.getRect().setTexture(&circle);
+								if (playerTurn)
+								{
+									board.at(counter) = playerSymbol;
+									box.getRect().setTexture(&cross);
+								}
+								else
+								{
+									board.at(counter) = opponentSymbol;
+									box.getRect().setTexture(&circle);
+								}
 
-								playerClicked = true;
 								playerTurn = !playerTurn;
+								playerClicked = true;
 								gameOver = GameCondition();
 
 								break;
@@ -198,12 +215,12 @@ void Tic_Tac_Toe::HandleEvents()
 							{
 								if (playerTurn)
 								{
-									board.at(counter) = "X";
+									board.at(counter) = playerSymbol;
 									box.getRect().setTexture(&cross);
 								}
 								else
 								{
-									board.at(counter) = "O";
+									board.at(counter) = opponentSymbol;
 									box.getRect().setTexture(&circle);
 								}
 
@@ -309,20 +326,11 @@ void Tic_Tac_Toe::DrawWinningTrio(std::vector<Button*>& winningTrio)
 	for (auto& box : winningTrio)
 	{
 		box->getRect().setFillColor(sf::RectangleShape().getFillColor());
-		if (onePlayerMode)
-		{
-			if (!playerTurn)
-				box->getRect().setTexture(&redCircle);
-			else
-				box->getRect().setTexture(&redCross);
-		}
+
+		if (playerTurn)
+			box->getRect().setTexture(&redCircle);
 		else
-		{
-			if (playerTurn)
-				box->getRect().setTexture(&redCircle);
-			else
-				box->getRect().setTexture(&redCross);
-		}
+			box->getRect().setTexture(&redCross);
 	}
 }
 
@@ -393,7 +401,10 @@ int Tic_Tac_Toe::Alpha_Beta(int depth, bool isMaximize, int a, int b)
 		{
 			if (s == "-")
 			{
-				s = "X";
+				if (playerTurn)
+					s = playerSymbol;
+				else
+					s = opponentSymbol;
 
 				playerTurn = !playerTurn;
 
@@ -417,7 +428,10 @@ int Tic_Tac_Toe::Alpha_Beta(int depth, bool isMaximize, int a, int b)
 		{
 			if (s == "-")
 			{
-				s = "O";
+				if (playerTurn)
+					s = playerSymbol;
+				else
+					s = opponentSymbol;
 
 				playerTurn = !playerTurn;
 
@@ -459,10 +473,17 @@ int Tic_Tac_Toe::MiniMax(int depth, bool isMaximize)
 		{
 			if (s == "-")
 			{
-				s = "X";
+				if (playerTurn)
+					s = playerSymbol;
+				else
+					s = opponentSymbol;
+
 				playerTurn = !playerTurn;
+
 				best = std::max(best, MiniMax(depth - 1, false));
+
 				playerTurn = !playerTurn;
+
 				s = "-";
 			}
 		}
@@ -475,10 +496,17 @@ int Tic_Tac_Toe::MiniMax(int depth, bool isMaximize)
 		{
 			if (s == "-")
 			{
-				s = "O";
+				if (playerTurn)
+					s = playerSymbol;
+				else
+					s = opponentSymbol;
+
 				playerTurn = !playerTurn;
+
 				best = std::min(best, MiniMax(depth - 1, true));
+
 				playerTurn = !playerTurn;
+
 				s = "-";
 			}
 		}
@@ -496,13 +524,19 @@ int Tic_Tac_Toe::FindBestMove()
 	{
 		if (s == "-")
 		{
-			s = "X";
+			if (playerTurn)
+				s = playerSymbol;
+			else
+				s = opponentSymbol;
 
 			playerTurn = !playerTurn;
 
-			//int moveValue = MiniMax(15, false);
-			int moveValue = Alpha_Beta(15, false,
-				std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+			int moveValue = 0;
+			if (algChoice)
+				moveValue = MiniMax(15, false);
+			else
+				moveValue = Alpha_Beta(15, false,
+					std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 
 			playerTurn = !playerTurn;
 

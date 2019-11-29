@@ -39,7 +39,7 @@ void Button::buttonConfig (	const sf::Vector2f &size = sf::Vector2f(0.f, 0.f),
 	rect.setSize(size);
 	rect.setPosition(position);
 	rect.setFillColor(fillColor);
-	if (!font.loadFromFile("Font/ARJULIAN.ttf"))
+	if (!font.loadFromFile("Font/OCRAEXT.ttf"))
 		cerr << "Can't load font!" << endl;
 	buttonText.setFont(font);
 	buttonText.setCharacterSize(25);

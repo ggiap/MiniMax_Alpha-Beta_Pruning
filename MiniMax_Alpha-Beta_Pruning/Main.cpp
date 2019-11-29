@@ -38,19 +38,19 @@ int main()
 					{
 					case 0:
 						//std::cout << "One Player" << std::endl;
-						game.StartGame(true);
+						game.StartGame(true, menu.algChoice); 
 						game.ResetBoard();
 						break;
 
 					case 1:
 						//std::cout << "Two Player" << std::endl;
-						game.StartGame(false);
+						game.StartGame(false, menu.algChoice);
 						game.ResetBoard();
 						break;
 
 					case 2:
 						//std::cout << "Options" << std::endl;
-
+						menu.chooseAlgo(window);
 						break;
 
 					case 3:
