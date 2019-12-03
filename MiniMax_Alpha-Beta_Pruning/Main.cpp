@@ -10,7 +10,7 @@ int main()
 {
 	sf::RenderWindow window(sf::VideoMode(600, 600), "MiniMax_Alpha-Beta Pruning");
 
-	Menu menu(window.getSize().x, window.getSize().y);
+	Menu menu(window, window.getSize().x, window.getSize().y);
 	Tic_Tac_Toe game(window);
 
 	sf::Event event;
@@ -19,52 +19,42 @@ int main()
 	{
 		while (window.pollEvent(event))
 		{
-			switch (event.type)
+			if (event.type == sf::Event::MouseMoved)
 			{
-			case sf::Event::KeyPressed:
+				menu.ActivateBtnHoverEffect();
+			}
+
+			if (event.type == sf::Event::MouseButtonPressed)
 			{
-				switch (event.key.code)
+				if (event.mouseButton.button == sf::Mouse::Left)
 				{
-				case sf::Keyboard::Up:
-					menu.MoveUp();
-					break;
+					int result = menu.getPressedButton();
 
-				case sf::Keyboard::Down:
-					menu.MoveDown();
-					break;
-
-				case::sf::Keyboard::Return:
-					switch (menu.Get_Pressed_Index())
+					if (result == 0) // One-player game
 					{
-					case 0:
-						//std::cout << "One Player" << std::endl;
-						game.StartGame(true, menu.algChoice); 
+						game.StartGame(true, menu.WhoPlaysFirst(), menu.getAlgorithmChoice(), menu.getDifficultyChoice());
 						game.ResetBoard();
-						break;
-
-					case 1:
-						//std::cout << "Two Player" << std::endl;
-						game.StartGame(false, menu.algChoice);
-						game.ResetBoard();
-						break;
-
-					case 2:
-						//std::cout << "Options" << std::endl;
-						menu.chooseAlgo(window);
-						break;
-
-					case 3:
-						//std::cout << "Exit" << std::endl;
-						window.close();
-						break;
 					}
+					else if (result == 1) // Two-player game
+					{
+						game.StartGame(false, menu.WhoPlaysFirst(), menu.getAlgorithmChoice(), menu.getDifficultyChoice());
+						game.ResetBoard();
+					}
+					else if (result == 2) // Options
+					{
+						menu.Options();
+					}
+					else if (result == 3) // Exit
+					{
+						window.close();
+					}
+					else
+						cout << "No buttons are being pressed!\n";
 				}
-				break;
 			}
-			case sf::Event::Closed:
+
+			if (event.type == sf::Event::Closed)
 				window.close();
-				break;
-			}
 		}
 
 		window.clear(sf::Color::White);

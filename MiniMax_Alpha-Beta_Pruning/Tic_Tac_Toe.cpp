@@ -1,17 +1,17 @@
 #include "Tic_Tac_Toe.h"
 
-
-void Tic_Tac_Toe::StartGame(bool mode, bool algorithmChoice)
+void Tic_Tac_Toe::StartGame(bool mode, bool whoPlaysFirst, bool algorithmChoice, int diff)
 {
-	playerTurn = true;
+	playerTurn = whoPlaysFirst;
 	onePlayerMode = mode;
 	algChoice = algorithmChoice;
+	depth = diff;
 
 	while (!gameOver)
 	{
 		if (onePlayerMode)
 		{
-			if (!gameOver && playerClicked)
+			if (!gameOver && (playerClicked || !playerTurn))
 			{
 				int pos = FindBestMove();
 				if (playerTurn)
@@ -64,12 +64,12 @@ void Tic_Tac_Toe::ResetBoard()
 	{
 		box.getRect().setTexture(nullptr);
 		box.getRect().setFillColor(sf::RectangleShape().getFillColor());
-		box.isPressed = false;
+		box.ResetButtonState();
 	}
 
-	//playerTurn = false;
 	onePlayerMode = false;
-	 playerClicked = false;
+	playerClicked = false;
+	count = 0;
 }
 
 void Tic_Tac_Toe::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -380,6 +380,8 @@ int Tic_Tac_Toe::Evaluate()
 
 int Tic_Tac_Toe::Alpha_Beta(int depth, bool isMaximize, int a, int b)
 {
+	++count;
+
 	int score = Evaluate();
 
 	if (score == 10)
@@ -452,6 +454,8 @@ int Tic_Tac_Toe::Alpha_Beta(int depth, bool isMaximize, int a, int b)
 
 int Tic_Tac_Toe::MiniMax(int depth, bool isMaximize)
 {
+	++count;
+
 	int score = Evaluate();
 
 	if (score == 10)
@@ -520,6 +524,9 @@ int Tic_Tac_Toe::FindBestMove()
 	int pos = -1;
 	int counter = 0;
 
+	count = 0;
+	// Used for debugging
+	t1 = std::chrono::high_resolution_clock::now();
 	for (auto &s : board)
 	{
 		if (s == "-")
@@ -532,11 +539,13 @@ int Tic_Tac_Toe::FindBestMove()
 			playerTurn = !playerTurn;
 
 			int moveValue = 0;
+
 			if (algChoice)
-				moveValue = MiniMax(15, false);
+				moveValue = MiniMax(depth, false);
 			else
-				moveValue = Alpha_Beta(15, false,
+				moveValue = Alpha_Beta(depth, false,
 					std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+
 
 			playerTurn = !playerTurn;
 
@@ -550,5 +559,11 @@ int Tic_Tac_Toe::FindBestMove()
 		}
 		++counter;
 	}
+	// Used for debugging
+	t2 = chrono::high_resolution_clock::now();
+	time_span = chrono::duration_cast<chrono::duration<double>>(t2 - t1);
+
+	std::cout << count << "\t" << time_span.count() << '\n';
+
 	return pos;
 }

@@ -1,32 +1,46 @@
 #pragma once
 #include <SFML\Graphics.hpp>
-#include <iostream>
+
 #include "Button.h"
 
 const auto menu_items = 4;
+const sf::Color ORANGE = sf::Color(250, 100, 0, 250);
 
 class Menu : public sf::Drawable
 {
 private:
-	virtual void draw(sf::RenderTarget &, sf::RenderStates) const;
-	void HandleEvents(sf::RenderWindow &);
+	virtual void draw(sf::RenderTarget&, sf::RenderStates) const;
+	void HandleEvents();
 
-	int selectedindex;
+	sf::RenderWindow* window;
 	sf::Font font;
-	sf::Text menu[menu_items];
+	sf::Text optionText;
+	sf::Text optionText2;
+	sf::Text optionText3;
 	sf::Texture background;
 	sf::Sprite  sprite_background;
+	sf::Texture option_background;
+	sf::Sprite  sprite_option_background;
+	std::vector<Button> mainMenu{ 4, Button() };
 	Button mmButton;
 	Button abButton;
+	Button diffEasyButton;
+	Button diffIntermButton;
+	Button diffHardButton;
+	Button playerButton;
+	Button opponentButton;
 	Button backButton;
+	bool algChoice;
+	bool playerTurn;
+	int difficulty;
 
 public:
-	Menu(size_t width, size_t height);
+	Menu(sf::RenderWindow&, size_t, size_t);
 
-	void MoveUp();
-	void MoveDown();
-	int  Get_Pressed_Index();
-	void chooseAlgo(sf::RenderWindow &);
-
-	bool algChoice;
+	void Options();
+	bool getAlgorithmChoice();
+	bool WhoPlaysFirst();
+	int getDifficultyChoice();
+	int getPressedButton();
+	void ActivateBtnHoverEffect();
 };

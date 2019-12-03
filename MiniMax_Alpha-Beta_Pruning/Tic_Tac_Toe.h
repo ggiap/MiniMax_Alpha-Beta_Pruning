@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <limits>
+#include <chrono>
 
 #include "Button.h"
 
@@ -17,7 +18,7 @@ public:
 		CreateBoard();
 	}
 
-	void StartGame(bool, bool);
+	void StartGame(bool, bool, bool, int);
 	void ResetBoard();
 private:
 	virtual void draw(sf::RenderTarget&, sf::RenderStates) const;
@@ -55,5 +56,12 @@ private:
 	bool onePlayerMode = false;
 	bool playerClicked = false;
 	bool algChoice = false;
+	int depth = 0;
+
+	// Used for debugging purposes
+	int count = 0;
+	std::chrono::high_resolution_clock::time_point t1;
+	std::chrono::high_resolution_clock::time_point t2;
+	chrono::duration<double> time_span;
 };
 
