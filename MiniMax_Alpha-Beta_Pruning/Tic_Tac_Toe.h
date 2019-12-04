@@ -41,7 +41,8 @@ private:
 	sf::Texture redCircle;
 	std::vector<sf::RectangleShape> lines{ 4, sf::RectangleShape() };
 	sf::Font font;
-	sf::Text anyKeyText;
+	sf::Text pressAgainText;
+	Button backButton;
 	std::vector<std::string> board
 	{
 		"-", "-", "-",
@@ -52,7 +53,6 @@ private:
 	const std::string opponentSymbol = "O";
 	bool playerTurn = false;
 	bool gameOver = false;
-	bool anyKeyPressed = false;
 	bool onePlayerMode = false;
 	bool playerClicked = false;
 	bool algChoice = false;

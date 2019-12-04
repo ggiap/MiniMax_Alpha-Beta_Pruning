@@ -4,7 +4,6 @@
 #include "Button.h"
 
 const auto menu_items = 4;
-const sf::Color ORANGE = sf::Color(250, 100, 0, 250);
 
 class Menu : public sf::Drawable
 {

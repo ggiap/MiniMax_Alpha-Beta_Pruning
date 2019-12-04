@@ -3,6 +3,8 @@
 #include <iostream>
 using namespace std;
 
+const sf::Color ORANGE = sf::Color(250, 100, 0, 250);
+
 class Button : public sf::Drawable
 {
 public:

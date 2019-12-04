@@ -108,6 +108,7 @@ void Menu::HandleEvents()
 Menu::Menu(sf::RenderWindow &win, size_t width, size_t height)
 {
 	window = &win;
+
 	if (!font.loadFromFile("Font\\OCRAEXT.ttf"))
 	{
 		exit(EXIT_FAILURE);
@@ -151,15 +152,17 @@ Menu::Menu(sf::RenderWindow &win, size_t width, size_t height)
 	sprite_background.setPosition(sf::Vector2f(width / 640, height / 400));
 
 	mmButton.buttonConfig(  sf::Vector2f(110, 30), sf::Vector2f(120, 80), sf::Color(50,100,200,95), sf::Color::White, "MiniMax");
-	abButton.buttonConfig(  sf::Vector2f(150, 30), sf::Vector2f(370, 80), sf::Color(50,100,200,95), ORANGE, "Alpha-Beta");
-	backButton.buttonConfig(sf::Vector2f(65, 30), sf::Vector2f(520, 560), sf::Color(50,100,200,95), sf::Color::White, "Back");
-
-	diffEasyButton.buttonConfig(sf::Vector2f(65, 30), sf::Vector2f(50, 240), sf::Color(50, 100, 200, 95), ORANGE, "Easy");
-	diffIntermButton.buttonConfig(sf::Vector2f(180, 30), sf::Vector2f(200, 240), sf::Color(50, 100, 200, 95), sf::Color::White, "Intermidiate");
-	diffHardButton.buttonConfig(sf::Vector2f(65, 30), sf::Vector2f(450, 240), sf::Color(50, 100, 200, 95), sf::Color::White, "Hard");
+	abButton.buttonConfig(  sf::Vector2f(150, 30), sf::Vector2f(350, 80), sf::Color(50,100,200,95), ORANGE, "Alpha-Beta");
+	
+	diffEasyButton.buttonConfig(sf::Vector2f(65, 30), sf::Vector2f(50, 250), sf::Color(50, 100, 200, 95), ORANGE, "Easy");
+	diffIntermButton.buttonConfig(sf::Vector2f(180, 30), sf::Vector2f(200, 250), sf::Color(50, 100, 200, 95), sf::Color::White, "Intermidiate");
+	diffHardButton.buttonConfig(sf::Vector2f(65, 30), sf::Vector2f(450, 250), sf::Color(50, 100, 200, 95), sf::Color::White, "Hard");
 
 	playerButton.buttonConfig(sf::Vector2f(90, 30), sf::Vector2f(130, 460), sf::Color(50, 100, 200, 95), ORANGE, "Player");
 	opponentButton.buttonConfig(sf::Vector2f(120, 30), sf::Vector2f(350, 460), sf::Color(50, 100, 200, 95), sf::Color::White, "Opponent");
+
+	backButton.buttonConfig(sf::Vector2f(65, 30), sf::Vector2f(520, 560), sf::Color(50, 100, 200, 95), sf::Color::White, "Back");
+	backButton.setHoverColor(ORANGE);
 
 	if (!option_background.loadFromFile("Images\\background.jpg"))
 	{
@@ -170,12 +173,12 @@ Menu::Menu(sf::RenderWindow &win, size_t width, size_t height)
 	sprite_option_background.setScale(1, 1);
 	sprite_option_background.setPosition(sf::Vector2f(width / 640, height / 400));
 
-	optionText.setString("~ Choose AI algorithm ~");
+	optionText.setString("  Choose AI algorithm");
 	optionText.setFont(font);
 	optionText.setFillColor(sf::Color::White);
 	optionText.setPosition(100,10);
 
-	optionText2.setString("~ Choose computer difficulty ~");
+	optionText2.setString("  Choose computer difficulty\n	(one-player game only)");
 	optionText2.setFont(font);
 	optionText2.setFillColor(sf::Color::White);
 	optionText2.setPosition(30, 170);

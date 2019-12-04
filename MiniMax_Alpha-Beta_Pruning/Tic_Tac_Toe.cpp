@@ -37,15 +37,20 @@ void Tic_Tac_Toe::StartGame(bool mode, bool whoPlaysFirst, bool algorithmChoice,
 		window->display();
 
 		gameOver = GameCondition();
+
+		if (backButton.isPressed)
+			gameOver = true;
 	}
 
-	while (!anyKeyPressed)
+	backButton.ResetButtonState();
+
+	while (!backButton.isPressed)
 	{
 		HandleEvents();
 
 		window->clear(sf::Color::White);
 		draw(*window, sf::RenderStates::Default);
-		window->draw(anyKeyText);
+		window->draw(pressAgainText);
 		window->display();
 	}
 }
@@ -57,7 +62,6 @@ void Tic_Tac_Toe::ResetBoard()
 		s = "-";
 	}
 	gameOver = false;
-	anyKeyPressed = false;
 
 	window->clear(sf::Color::White);
 	for (auto& box : boxes)
@@ -66,6 +70,8 @@ void Tic_Tac_Toe::ResetBoard()
 		box.getRect().setFillColor(sf::RectangleShape().getFillColor());
 		box.ResetButtonState();
 	}
+
+	backButton.ResetButtonState();
 
 	onePlayerMode = false;
 	playerClicked = false;
@@ -78,6 +84,8 @@ void Tic_Tac_Toe::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		target.draw(box.getRect());
 	for (const auto& line : lines)
 		target.draw(line);
+
+	target.draw(backButton);
 }
 
 void Tic_Tac_Toe::CreateBoard()
@@ -138,10 +146,13 @@ void Tic_Tac_Toe::CreateBoard()
 	lines.at(3).rotate(90);
 	lines.at(3).setFillColor(sf::Color::Black);
 
-	anyKeyText.setFont(font);
-	anyKeyText.setFillColor(sf::Color(150, 150, 0));
-	anyKeyText.setString("Press any	key to    continue..");
-	anyKeyText.setPosition(sf::Vector2f(1, 550));
+	pressAgainText.setFont(font);
+	pressAgainText.setFillColor(sf::Color(150, 150, 0));
+	pressAgainText.setString("   Press    back to    exit..");
+	pressAgainText.setPosition(sf::Vector2f(1, 550));
+
+	backButton.buttonConfig(sf::Vector2f(65, 30), sf::Vector2f(535, 570), sf::Color(50, 100, 200, 95), sf::Color::Black, "Back");
+	backButton.setHoverColor(ORANGE);
 }
 
 void Tic_Tac_Toe::LoadResources()
@@ -177,15 +188,15 @@ void Tic_Tac_Toe::HandleEvents()
 		if (event.type == sf::Event::Closed)
 			window->close();
 
+		sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
+		sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+
 		if (!gameOver)
 		{
 			if (event.type == sf::Event::MouseButtonPressed)
 			{
 				if (event.mouseButton.button == sf::Mouse::Left)
 				{
-					sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
-					sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
-
 					int counter = 0;
 					for (auto& box : boxes)
 					{
@@ -230,14 +241,14 @@ void Tic_Tac_Toe::HandleEvents()
 						}
 						++counter;
 					}
+
+					if (backButton.getRect().getGlobalBounds().contains(mousePosF))
+						backButton.isPressed = true;
 				}
 			}
 
 			if (event.type == sf::Event::MouseMoved)
 			{
-				sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
-				sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
-
 				for (auto& box : boxes)
 				{
 					if (box.getRect().getGlobalBounds().contains(mousePosF) && !box.isPressed)
@@ -250,11 +261,41 @@ void Tic_Tac_Toe::HandleEvents()
 						box.getRect().setFillColor(sf::RectangleShape().getFillColor());
 					}
 				}
+
+				if (backButton.getRect().getGlobalBounds().contains(mousePosF))
+				{
+					backButton.setButtonTextColor(backButton.getHoverColor());
+				}
+				else
+				{
+					backButton.setButtonTextColor(sf::Color::Black);
+				}
 			}
 		}
 
-		if (event.type == sf::Event::KeyPressed && gameOver == true)
-			anyKeyPressed = true;
+		if (gameOver)
+		{
+			if (event.type == sf::Event::MouseButtonPressed)
+			{
+				if (event.mouseButton.button == sf::Mouse::Left)
+				{
+					if (backButton.getRect().getGlobalBounds().contains(mousePosF))
+						backButton.isPressed = true;
+				}
+			}
+
+			if (event.type == sf::Event::MouseMoved)
+			{
+				if (backButton.getRect().getGlobalBounds().contains(mousePosF))
+				{
+					backButton.setButtonTextColor(backButton.getHoverColor());
+				}
+				else
+				{
+					backButton.setButtonTextColor(sf::Color::Black);
+				}
+			}
+		}
 	}
 }
 
@@ -312,6 +353,8 @@ bool Tic_Tac_Toe::GameCondition()
 
 	if (std::find(board.begin(), board.end(), "-") == board.end())
 		return true;
+
+	return false;
 }
 
 bool Tic_Tac_Toe::Equals3(const std::string& s1, const std::string& s2, const std::string& s3) const
