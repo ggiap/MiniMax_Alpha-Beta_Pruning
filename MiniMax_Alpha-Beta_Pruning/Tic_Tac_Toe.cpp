@@ -423,8 +423,6 @@ int Tic_Tac_Toe::Evaluate()
 
 int Tic_Tac_Toe::Alpha_Beta(int depth, bool isMaximize, int a, int b)
 {
-	++count;
-
 	int score = Evaluate();
 
 	if (score == 10)
@@ -432,6 +430,8 @@ int Tic_Tac_Toe::Alpha_Beta(int depth, bool isMaximize, int a, int b)
 
 	if (score == -10)
 		return score;
+
+	++count;
 
 	if (depth == 0)
 		return score;
@@ -497,8 +497,6 @@ int Tic_Tac_Toe::Alpha_Beta(int depth, bool isMaximize, int a, int b)
 
 int Tic_Tac_Toe::MiniMax(int depth, bool isMaximize)
 {
-	++count;
-
 	int score = Evaluate();
 
 	if (score == 10)
@@ -506,6 +504,8 @@ int Tic_Tac_Toe::MiniMax(int depth, bool isMaximize)
 
 	if (score == -10)
 		return score;
+
+	++count;
 
 	if (depth == 0)
 		return score;
