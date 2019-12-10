@@ -114,18 +114,18 @@ Menu::Menu(sf::RenderWindow &win, size_t width, size_t height)
 		exit(EXIT_FAILURE);
 	}
 
-	mainMenu.at(0).buttonConfig(sf::Vector2f(150, 30),
-								sf::Vector2f(width / 2.85, height / (menu_items + 1) * 2),
+	mainMenu.at(0).buttonConfig(sf::Vector2f(180, 30),
+								sf::Vector2f(width / 2.95, height / (menu_items + 1) * 2),
 								sf::Color(50, 100, 200, 95),
 								sf::Color::White,
-								"One Player");
+								"Singleplayer");
 	mainMenu.at(0).setHoverColor(ORANGE);
 
-	mainMenu.at(1).buttonConfig(sf::Vector2f(150, 30),
+	mainMenu.at(1).buttonConfig(sf::Vector2f(165, 30),
 								sf::Vector2f(width / 2.85, height / (menu_items + 1) * 2.7),
 								sf::Color(50, 100, 200, 95),
 								sf::Color::White,
-								"Two Player");
+								"Multiplayer");
 	mainMenu.at(1).setHoverColor(ORANGE);
 
 	mainMenu.at(2).buttonConfig(sf::Vector2f(110, 30),
