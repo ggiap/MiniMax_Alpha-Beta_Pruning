@@ -178,12 +178,12 @@ Menu::Menu(sf::RenderWindow &win, size_t width, size_t height)
 	optionText.setFillColor(sf::Color::White);
 	optionText.setPosition(100,10);
 
-	optionText2.setString("  Choose computer difficulty\n	(one-player game only)");
+	optionText2.setString("  Choose computer difficulty\n      (singleplayer only)");
 	optionText2.setFont(font);
 	optionText2.setFillColor(sf::Color::White);
 	optionText2.setPosition(30, 170);
 
-	optionText3.setString("		Who plays first\n	(one-player game only)");
+	optionText3.setString("		Who plays first\n	  (singleplayer only)");
 	optionText3.setFont(font);
 	optionText3.setFillColor(sf::Color::White);
 	optionText3.setPosition(30, 350);
