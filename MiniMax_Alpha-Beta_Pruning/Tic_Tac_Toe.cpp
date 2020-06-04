@@ -606,7 +606,7 @@ int Tic_Tac_Toe::FindBestMove()
 	t2 = chrono::high_resolution_clock::now();
 	time_span = chrono::duration_cast<chrono::duration<double>>(t2 - t1);
 
-	std::cout << count << "\t" << time_span.count() << "s\n";
+	std::cout << count << "\t" << time_span.count() * 1000 << "ms\n";
 
 	return pos;
 }
